@@ -52,6 +52,10 @@
   }
 
   function prepareSeed(seed) {
+    if (seed) {
+      Math.seedrandom(seed);
+    }
+
     // use "inside-out" variant of the Fisher-Yates shuffle, tweaked to work
     // with a two-dimensional array
     for (var i = 0; i < cellCount; i++) {
@@ -146,7 +150,7 @@
     }
   }
 
-  prepareSeed();
+  prepareSeed('seed');
   clearCanvas();
   renderCells();
   iterate();
