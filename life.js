@@ -14,8 +14,9 @@
       multiplier = 5, // pixels per cell
       height     = $canvas.height() / multiplier,
       width      = $canvas.width() / multiplier,
-      white      = "rgb(255, 255, 255)",
-      black      = "rgb(0, 0, 0)",
+      aliveColor = 0,
+      deadColor  = 255,
+      dyingDelta = 10,
       cellCount  = width * height,
       liveCount  = cellCount / 10, // TODO: make that configurable
       cells      = [];
@@ -26,24 +27,28 @@
 
   var context = $canvas[0].getContext('2d');
 
+  function rgb(color) {
+    return 'rgb(' + color + ', ' + color + ', ' + color + ')';
+  }
+
   function clearCanvas() {
-    context.fillStyle = white;
+    context.fillStyle = rgb(aliveColor);
     context.fillRect(0, 0, width * multiplier, height * multiplier);
   }
 
-  function paintCell(x, y, alive) {
-    context.fillStyle = alive ? black : white;
+  function paintCell(x, y, color) {
+    context.fillStyle = rgb(color);
     context.fillRect(x * multiplier, y * multiplier, multiplier, multiplier);
   }
 
   function expireCell(x, y) {
-    paintCell(x, y, false);
-    cells[x][y] = false;
+    cells[x][y] += dyingDelta;
+    paintCell(x, y, cells[x][y]);
   }
 
   function reviveCell(x, y) {
-    paintCell(x, y, true);
-    cells[x][y] = true;
+    cells[x][y] = aliveColor;
+    paintCell(x, y, aliveColor);
   }
 
   function prepareSeed(seed) {
@@ -61,7 +66,7 @@
       }
 
       cells[lastX][lastY] = cells[randX][randY];
-      cells[randX][randY] = i < liveCount;
+      cells[randX][randY] = i < liveCount ? aliveColor : deadColor;
     }
   }
 
@@ -79,7 +84,7 @@
 
     for (var y = 0; y < height; y++) {
       for (var x = 0; x < width; x++) {
-        var alive          = cells[x][y],
+        var alive          = (cells[x][y] == aliveColor),
             neighbourCount = 0;
 
         for (var j = x - 1, maxX = x + 1; j <= maxX; j++) {
@@ -104,7 +109,7 @@
             }
 
             if ((neighbourX != x || neighbourY != y) &&
-                cells[neighbourX][neighbourY]) {
+                cells[neighbourX][neighbourY] == aliveColor) {
               neighbourCount++;
             }
           }
@@ -118,6 +123,8 @@
         } else { // dead
           if (neighbourCount == 3) { // rule 3
             queue.push({ revive: true, x: x, y: y });
+          } else if (cells[x][y] > 0) { // dying
+            queue.push({ expire: true, x: x, y: y});
           }
         }
       }
