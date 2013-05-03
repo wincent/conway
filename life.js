@@ -31,34 +31,44 @@
     context.fillRect(0, 0, width * multiplier, height * multiplier);
   }
 
-  function paintCell(x, y, color) {
-    context.fillStyle = color;
+  function paintCell(x, y, alive) {
+    context.fillStyle = alive ? black : white;
     context.fillRect(x * multiplier, y * multiplier, multiplier, multiplier);
   }
 
   function expireCell(x, y) {
-    paintCell(x, y, white);
-    cells[x * width + y] = false;
+    paintCell(x, y, false);
+    cells[x][y] = false;
   }
 
   function reviveCell(x, y) {
-    paintCell(x, y, black);
-    cells[x * width + y] = true;
+    paintCell(x, y, true);
+    cells[x][y] = true;
   }
 
   function prepareSeed(seed) {
-    // use "inside-out" variant of the Fisher-Yates shuffle
+    // use "inside-out" variant of the Fisher-Yates shuffle, tweaked to work
+    // with a two-dimensional array
     for (var i = 0; i < cellCount; i++) {
-      var rand = Math.round(Math.random() * i);
-      cells[i] = cells[rand];
-      cells[rand] = i < liveCount;
+      var rand  = Math.round(Math.random() * i),
+          randX = Math.floor(rand / width),
+          randY = rand / width,
+          lastX = Math.floor(i / width),
+          lastY = i % width;
+
+      if (!cells[lastX]) {
+        cells[lastX] = [];
+      }
+
+      cells[lastX][lastY] = cells[randX][randY];
+      cells[randX][randY] = i < liveCount;
     }
   }
 
   function renderCells() {
     for (var y = 0; y < height; y++) {
       for (var x = 0; x < width; x++) {
-        cells[y * width + x] ? reviveCell(x, y) : expireCell(x, y);
+        paintCell(x, y, cells[x][y]);
       }
     }
   }
@@ -67,31 +77,32 @@
     // build up a queue of operations
     var queue = [];
 
-    for (var i = 0; i < cellCount; i++) {
-      var alive          = cells[i],
-          x              = i % width,
-          y              = Math.floor(i / width),
-          neighbourCount = 0;
+    for (var y = 0; y < height; y++) {
+      for (var x = 0; x < width; x++) {
+        var alive          = cells[x][y],
+            neighbourCount = 0;
 
-      for (var j = x - 1, maxX = x + 1; j <= maxX; j++) {
-        for (var k = y - 1, maxY = y + 1; k <= maxY; k++) {
-          if (j >= 0 && j < width &&
-              k >= 0 && k < height &&
-              (j != x || k != y) &&
-              cells[k * width + j]) {
-            neighbourCount++;
+        // could also consider wrapping around here
+        for (var j = x - 1, maxX = x + 1; j <= maxX; j++) {
+          for (var k = y - 1, maxY = y + 1; k <= maxY; k++) {
+            if (j >= 0 && j < width &&
+                k >= 0 && k < height &&
+                (j != x || k != y) &&
+                cells[j][k]) {
+              neighbourCount++;
+            }
           }
         }
-      }
 
-      if (alive) {
-        if (neighbourCount < 2 || // rule 1
-            neighbourCount > 3) { // rule 2
-          queue.push({ expire: true, x: x, y: y});
-        }
-      } else { // dead
-        if (neighbourCount == 3) { // rule 3
-          queue.push({ revive: true, x: x, y: y });
+        if (alive) {
+          if (neighbourCount < 2 || // rule 1
+              neighbourCount > 3) { // rule 2
+            queue.push({ expire: true, x: x, y: y});
+          }
+        } else { // dead
+          if (neighbourCount == 3) { // rule 3
+            queue.push({ revive: true, x: x, y: y });
+          }
         }
       }
     }
