@@ -16,7 +16,7 @@
       width      = $canvas.width() / multiplier,
       aliveColor = 0,
       deadColor  = 255,
-      dyingDelta = 4,
+      dyingDelta = 4, // set to 255 to behave like "normal" Game of Life
       cellCount  = width * height,
       liveCount  = cellCount / 10, // TODO: make that configurable
       cells      = [];
@@ -82,11 +82,13 @@
     // build up a queue of operations
     var queue = [];
 
+    // check all cells
     for (var y = 0; y < height; y++) {
       for (var x = 0; x < width; x++) {
         var alive          = (cells[x][y] == aliveColor),
             neighbourCount = 0;
 
+        // get count of live neighbours
         for (var j = x - 1, maxX = x + 1; j <= maxX; j++) {
           for (var k = y - 1, maxY = y + 1; k <= maxY; k++) {
             var neighbourX, neighbourY;
@@ -115,6 +117,7 @@
           }
         }
 
+        // apply rules of Game of Life
         if (alive) {
           if (neighbourCount < 2 || // rule 1
               neighbourCount > 3) { // rule 2
