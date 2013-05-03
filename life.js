@@ -26,6 +26,7 @@
       liveCount  = cellCount / 10, // TODO: make that configurable
       cells      = [],
       iterating  = false,
+      interval   = 10,
       timer;
 
   if (!$canvas[0].getContext) {
@@ -151,7 +152,7 @@
     }
 
     if (queue.length && iterating) {
-      timer = setTimeout(iterate, 10);
+      timer = setTimeout(iterate, interval);
     }
   }
 
