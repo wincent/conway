@@ -82,13 +82,29 @@
         var alive          = cells[x][y],
             neighbourCount = 0;
 
-        // could also consider wrapping around here
         for (var j = x - 1, maxX = x + 1; j <= maxX; j++) {
           for (var k = y - 1, maxY = y + 1; k <= maxY; k++) {
-            if (j >= 0 && j < width &&
-                k >= 0 && k < height &&
-                (j != x || k != y) &&
-                cells[j][k]) {
+            var neighbourX, neighbourY;
+
+            // wrap around if necessary
+            if (j < 0) {
+              neighbourX = width - 1;
+            } else if (j == width) {
+              neighbourX = 0;
+            } else {
+              neighbourX = j;
+            }
+
+            if (k < 0) {
+              neighbourY = height - 1;
+            } else if (k == height) {
+              neighbourY = 0;
+            } else {
+              neighbourY = k;
+            }
+
+            if ((neighbourX != x || neighbourY != y) &&
+                cells[neighbourX][neighbourY]) {
               neighbourCount++;
             }
           }
