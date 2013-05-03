@@ -51,10 +51,10 @@
     // with a two-dimensional array
     for (var i = 0; i < cellCount; i++) {
       var rand  = Math.round(Math.random() * i),
-          randX = Math.floor(rand / width),
-          randY = rand / width,
-          lastX = Math.floor(i / width),
-          lastY = i % width;
+          randX = rand % width,
+          randY = Math.floor(rand / width),
+          lastX = i % width,
+          lastY = Math.floor(i / width);
 
       if (!cells[lastX]) {
         cells[lastX] = [];
