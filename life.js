@@ -19,7 +19,9 @@
       dyingDelta = 4, // set to 255 to behave like "normal" Game of Life
       cellCount  = width * height,
       liveCount  = cellCount / 10, // TODO: make that configurable
-      cells      = [];
+      cells      = [],
+      iterating  = false,
+      timer;
 
   if (!$canvas[0].getContext) {
     return; // no browser support
@@ -143,15 +145,64 @@
       item.revive ? reviveCell(item.x, item.y) : expireCell(item.x, item.y);
     }
 
-    if (queue.length) {
-      setTimeout(iterate, 10);
-    } else {
-      console.log('nothing else to do');
+    if (queue.length && iterating) {
+      timer = setTimeout(iterate, 10);
     }
   }
 
-  prepareSeed('seed');
-  clearCanvas();
-  renderCells();
-  iterate();
+  function reset() {
+    prepareSeed('seed');
+    clearCanvas();
+    renderCells();
+  }
+
+  function start() {
+    iterating = true;
+    iterate();
+  }
+
+  function stop() {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+
+    iterating = false;
+  }
+
+  reset();
+
+  var $start = $('#start'),
+      $stop  = $('#stop'),
+      $step  = $('#step'),
+      $reset = $('#reset');
+
+  $start.on('click', function() {
+    $start.attr('disabled', 'disabled');
+    $step.attr('disabled', 'disabled');
+    $stop.removeAttr('disabled');
+    $reset.removeAttr('disabled');
+    start();
+  });
+
+  $stop.on('click', function() {
+    $stop.attr('disabled', 'disabled');
+    $start.removeAttr('disabled');
+    $step.removeAttr('disabled');
+    stop();
+  });
+
+  $step.on('click', function() {
+    $reset.removeAttr('disabled');
+    iterate();
+  });
+
+  $reset.on('click', function() {
+    $reset.attr('disabled', 'disabled');
+    $stop.attr('disabled', 'disabled');
+    $start.removeAttr('disabled');
+    $step.removeAttr('disabled');
+    stop();
+    reset();
+  });
 })();
