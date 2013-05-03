@@ -16,7 +16,7 @@
       width      = $canvas.width() / multiplier,
       aliveColor = 0,
       deadColor  = 255,
-      dyingDelta = 10,
+      dyingDelta = 4,
       cellCount  = width * height,
       liveCount  = cellCount / 10, // TODO: make that configurable
       cells      = [];
