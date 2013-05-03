@@ -10,14 +10,15 @@
 //    if by reproduction.
 //
 (function() {
-  var $canvas   = $('#life'),
-      height    = $canvas.height(),
-      width     = $canvas.width(),
-      white     = "rgb(255, 255, 255)",
-      black     = "rgb(0, 0, 0)",
-      cellCount = width * height,
-      liveCount = cellCount / 10, // TODO: make that configurable
-      cells     = [];
+  var $canvas    = $('#life'),
+      multiplier = 5, // pixels per cell
+      height     = $canvas.height() / multiplier,
+      width      = $canvas.width() / multiplier,
+      white      = "rgb(255, 255, 255)",
+      black      = "rgb(0, 0, 0)",
+      cellCount  = width * height,
+      liveCount  = cellCount / 10, // TODO: make that configurable
+      cells      = [];
 
   if (!$canvas[0].getContext) {
     return; // no browser support
@@ -27,12 +28,12 @@
 
   function clearCanvas() {
     context.fillStyle = white;
-    context.fillRect(0, 0, width, height);
+    context.fillRect(0, 0, width * multiplier, height * multiplier);
   }
 
   function paintCell(x, y, color) {
     context.fillStyle = color;
-    context.fillRect(x, y, 1, 1);
+    context.fillRect(x * multiplier, y * multiplier, multiplier, multiplier);
   }
 
   function expireCell(x, y) {
