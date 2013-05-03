@@ -11,6 +11,11 @@
 //
 (function() {
   var $canvas    = $('#life'),
+      $start     = $('#start'),
+      $stop      = $('#stop'),
+      $step      = $('#step'),
+      $reset     = $('#reset'),
+      $seed      = $('#seed'),
       multiplier = 5, // pixels per cell
       height     = $canvas.height() / multiplier,
       width      = $canvas.width() / multiplier,
@@ -151,17 +156,33 @@
   }
 
   function reset() {
-    prepareSeed('seed');
+    stop();
+
+    $reset.attr('disabled', 'disabled');
+    $stop.attr('disabled', 'disabled');
+    $start.removeAttr('disabled');
+    $step.removeAttr('disabled');
+
+    prepareSeed($seed.val() || 'seed');
     clearCanvas();
     renderCells();
   }
 
   function start() {
+    $start.attr('disabled', 'disabled');
+    $step.attr('disabled', 'disabled');
+    $stop.removeAttr('disabled');
+    $reset.removeAttr('disabled');
+
     iterating = true;
     iterate();
   }
 
   function stop() {
+    $stop.attr('disabled', 'disabled');
+    $start.removeAttr('disabled');
+    $step.removeAttr('disabled');
+
     if (timer) {
       clearTimeout(timer);
       timer = null;
@@ -170,39 +191,23 @@
     iterating = false;
   }
 
-  reset();
-
-  var $start = $('#start'),
-      $stop  = $('#stop'),
-      $step  = $('#step'),
-      $reset = $('#reset');
-
-  $start.on('click', function() {
-    $start.attr('disabled', 'disabled');
-    $step.attr('disabled', 'disabled');
-    $stop.removeAttr('disabled');
-    $reset.removeAttr('disabled');
-    start();
-  });
-
-  $stop.on('click', function() {
-    $stop.attr('disabled', 'disabled');
-    $start.removeAttr('disabled');
-    $step.removeAttr('disabled');
-    stop();
-  });
-
-  $step.on('click', function() {
+  function step() {
     $reset.removeAttr('disabled');
     iterate();
+  }
+
+  $seed.on('change keyup', function(evt) {
+    if (evt.keyCode == 13) { // enter
+      reset();
+    } else {
+      $reset.removeAttr('disabled');
+    }
   });
 
-  $reset.on('click', function() {
-    $reset.attr('disabled', 'disabled');
-    $stop.attr('disabled', 'disabled');
-    $start.removeAttr('disabled');
-    $step.removeAttr('disabled');
-    stop();
-    reset();
-  });
+  $start.on('click', start);
+  $stop.on('click', stop);
+  $reset.on('click', reset);
+  $step.on('click', step);
+
+  reset();
 })();
