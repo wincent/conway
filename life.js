@@ -10,6 +10,8 @@
 //    if by reproduction.
 //
 (function() {
+  'use strict';
+
   var $canvas        = $('#life'),
       $fps           = $('#fps'),
       $start         = $('#start'),
