@@ -103,6 +103,10 @@
         // get count of live neighbours
         for (var j = x - 1, maxX = x + 1; j <= maxX; j++) {
           for (var k = y - 1, maxY = y + 1; k <= maxY; k++) {
+            if (j == x && k == y) {
+              continue;
+            }
+
             var neighbourX, neighbourY;
 
             // wrap around if necessary
@@ -122,8 +126,7 @@
               neighbourY = k;
             }
 
-            if ((neighbourX != x || neighbourY != y) &&
-                cells[neighbourX][neighbourY] == aliveColor) {
+            if (cells[neighbourX][neighbourY] == aliveColor) {
               neighbourCount++;
             }
           }
