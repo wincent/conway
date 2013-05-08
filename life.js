@@ -10,23 +10,26 @@
 //    if by reproduction.
 //
 (function() {
-  var $canvas    = $('#life'),
-      $start     = $('#start'),
-      $stop      = $('#stop'),
-      $step      = $('#step'),
-      $reset     = $('#reset'),
-      $seed      = $('#seed'),
-      multiplier = 5, // pixels per cell
-      height     = $canvas.height() / multiplier,
-      width      = $canvas.width() / multiplier,
-      aliveColor = 0,
-      deadColor  = 255,
-      dyingDelta = 4, // set to 255 to behave like "normal" Game of Life
-      cellCount  = width * height,
-      liveCount  = cellCount / 10, // TODO: make that configurable
-      cells      = [],
-      iterating  = false,
-      interval   = 10,
+  var $canvas        = $('#life'),
+      $fps           = $('#fps'),
+      $start         = $('#start'),
+      $stop          = $('#stop'),
+      $step          = $('#step'),
+      $reset         = $('#reset'),
+      $seed          = $('#seed'),
+      multiplier     = 5, // pixels per cell
+      height         = $canvas.height() / multiplier,
+      width          = $canvas.width() / multiplier,
+      aliveColor     = 0,
+      deadColor      = 255,
+      dyingDelta     = 4, // set to 255 to behave like "normal" Game of Life
+      cellCount      = width * height,
+      liveCount      = cellCount / 10, // TODO: make that configurable
+      cells          = [],
+      iterating      = false,
+      interval       = 10,
+      startTime      = (new Date) * 1,
+      frameCount     = 0,
       timer;
 
   if (!$canvas[0].getContext) {
@@ -157,6 +160,8 @@
     if (queue.length && iterating) {
       timer = setTimeout(iterate, interval);
     }
+
+    frameCount++;
   }
 
   function reset() {
@@ -200,6 +205,18 @@
     iterate();
   }
 
+  function updateFPS() {
+    var now       = (new Date) * 1,
+        timeDelta = now - startTime,
+        fps       = frameCount / timeDelta * 1000;
+
+    $fps.text((fps).toFixed(2));
+
+    // reset
+    startTime = now;
+    frameCount = 0;
+  }
+
   $seed.on('change keyup', function(evt) {
     if (evt.keyCode == 13) { // enter
       reset();
@@ -213,5 +230,6 @@
   $reset.on('click', reset);
   $step.on('click', step);
 
+  setInterval(updateFPS, 500);
   reset();
 })();
