@@ -112,24 +112,9 @@
               continue;
             }
 
-            var neighbourX, neighbourY;
-
             // wrap around if necessary
-            if (j < 0) {
-              neighbourX = width - 1;
-            } else if (j == width) {
-              neighbourX = 0;
-            } else {
-              neighbourX = j;
-            }
-
-            if (k < 0) {
-              neighbourY = height - 1;
-            } else if (k == height) {
-              neighbourY = 0;
-            } else {
-              neighbourY = k;
-            }
+            var neighbourX = (width + j) % width,
+                neighbourY = (height + k) % height;
 
             if (cells[neighbourX][neighbourY] == aliveColor) {
               neighbourCount++;
