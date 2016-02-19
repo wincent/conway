@@ -12,7 +12,7 @@
 (function() {
   'use strict';
 
-  var $canvas        = $('#life'),
+  var $canvas        = $('#life').on('click', handleCanvasClick),
       $fps           = $('#fps'),
       $start         = $('#start'),
       $stop          = $('#stop'),
@@ -60,6 +60,13 @@
   function reviveCell(x, y) {
     cells[x][y] = aliveColor;
     paintCell(x, y, aliveColor);
+  }
+
+  function handleCanvasClick(event) {
+    reviveCell(
+      Math.floor(event.offsetX / multiplier),
+      Math.floor(event.offsetY / multiplier)
+    );
   }
 
   function prepareSeed(seed) {
