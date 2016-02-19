@@ -29,10 +29,8 @@
       liveCount      = cellCount / 10, // TODO: make that configurable
       cells          = [],
       iterating      = false,
-      interval       = 10,
       startTime      = (new Date) * 1,
-      frameCount     = 0,
-      timer;
+      frameCount     = 0;
 
   if (!$canvas[0].getContext) {
     return; // no browser support
@@ -145,7 +143,7 @@
     }
 
     if (queue.length && iterating) {
-      timer = setTimeout(iterate, interval);
+      requestAnimationFrame(iterate);
     }
 
     frameCount++;
@@ -178,12 +176,6 @@
     $stop.attr('disabled', 'disabled');
     $start.removeAttr('disabled');
     $step.removeAttr('disabled');
-
-    if (timer) {
-      clearTimeout(timer);
-      timer = null;
-    }
-
     iterating = false;
   }
 
