@@ -131,13 +131,13 @@
     // check all cells
     for (var y = 0; y < height; y++) {
       for (var x = 0; x < width; x++) {
-        var alive          = (cells[x][y] == aliveColor),
+        var alive          = (cells[x][y] === aliveColor),
             neighbourCount = 0;
 
         // get count of live neighbours
         for (var j = x - 1, maxX = x + 1; j <= maxX; j++) {
           for (var k = y - 1, maxY = y + 1; k <= maxY; k++) {
-            if (j == x && k == y) {
+            if (j === x && k === y) {
               continue;
             }
 
@@ -145,7 +145,7 @@
             var neighbourX = (width + j) % width,
                 neighbourY = (height + k) % height;
 
-            if (cells[neighbourX][neighbourY] == aliveColor) {
+            if (cells[neighbourX][neighbourY] === aliveColor) {
               neighbourCount++;
             }
           }
@@ -158,7 +158,7 @@
             queue.push({ expire: true, x: x, y: y});
           }
         } else { // dead
-          if (neighbourCount == 3) { // rule 3
+          if (neighbourCount === 3) { // rule 3
             queue.push({ revive: true, x: x, y: y });
           } else if (cells[x][y] > 0) { // dying
             queue.push({ expire: true, x: x, y: y});
@@ -228,7 +228,7 @@
   }
 
   $seed.on('change keyup', function(evt) {
-    if (evt.keyCode == 13) { // enter
+    if (evt.keyCode === 13) { // enter
       reset();
     } else {
       $reset.removeAttr('disabled');
