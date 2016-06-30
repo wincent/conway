@@ -61,7 +61,7 @@
   }
 
   function expireCell(x, y) {
-    cells[x][y] += dyingDelta;
+    cells[x][y] = Math.min(deadColor, cells[x][y] + dyingDelta);
     paintCell(x, y, cells[x][y]);
   }
 
@@ -160,7 +160,7 @@
         } else { // dead
           if (neighbourCount === 3) { // rule 3
             queue.push({ revive: true, x: x, y: y });
-          } else if (cells[x][y] > 0) { // dying
+          } else if (cells[x][y] < deadColor) { // dying
             queue.push({ expire: true, x: x, y: y});
           }
         }
