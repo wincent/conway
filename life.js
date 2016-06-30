@@ -30,7 +30,7 @@
       liveCount      = cellCount / 10, // TODO: make that configurable
       cells          = [],
       iterating      = false,
-      scheduled      = true,
+      scheduled      = false,
       startTime      = (new Date) * 1,
       frameCount     = 0;
 
@@ -207,6 +207,7 @@
     $reset.removeAttr('disabled');
 
     iterating = true;
+    scheduled = true;
     iterate();
   }
 
