@@ -12,7 +12,8 @@
 (function() {
   'use strict';
 
-  var $canvas        = $('#life').on('click', handleCanvasClick),
+  var painting       = false,
+      $canvas        = $('#life'),
       $fps           = $('#fps'),
       $start         = $('#start'),
       $stop          = $('#stop'),
@@ -35,6 +36,13 @@
   if (!$canvas[0].getContext) {
     return; // no browser support
   }
+
+  // Click and drag to "paint" onto the canvas.
+  $canvas
+    .on('mousedown', handleCanvasMousedown)
+    .on('mousemove', handleCanvasMousemove);
+  $('body')
+    .on('mouseup', handleMouseup);
 
   var context = $canvas[0].getContext('2d');
 
@@ -62,11 +70,27 @@
     paintCell(x, y, aliveColor);
   }
 
-  function handleCanvasClick(event) {
-    reviveCell(
-      Math.floor(event.offsetX / multiplier),
-      Math.floor(event.offsetY / multiplier)
-    );
+  function paint(event) {
+    if (painting) {
+      var x = Math.floor(event.offsetX / multiplier),
+          y = Math.floor(event.offsetY / multiplier);
+      if (x >= 0 && x < width && y >= 0 && y < height) {
+        reviveCell(x, y);
+      }
+    }
+  }
+
+  function handleCanvasMousedown(event) {
+    painting = true;
+    paint(event);
+  }
+
+  function handleMouseup(event) {
+    painting = false;
+  }
+
+  function handleCanvasMousemove(event) {
+    paint(event);
   }
 
   function prepareSeed(seed) {
