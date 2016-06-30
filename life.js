@@ -30,6 +30,7 @@
       liveCount      = cellCount / 10, // TODO: make that configurable
       cells          = [],
       iterating      = false,
+      scheduled      = true,
       startTime      = (new Date) * 1,
       frameCount     = 0;
 
@@ -71,18 +72,20 @@
   }
 
   function paint(event) {
-    if (painting) {
-      var x = Math.floor(event.offsetX / multiplier),
-          y = Math.floor(event.offsetY / multiplier);
-      if (x >= 0 && x < width && y >= 0 && y < height) {
-        reviveCell(x, y);
-      }
+    var x = Math.floor(event.offsetX / multiplier),
+        y = Math.floor(event.offsetY / multiplier);
+    if (x >= 0 && x < width && y >= 0 && y < height) {
+      reviveCell(x, y);
     }
   }
 
   function handleCanvasMousedown(event) {
     painting = true;
     paint(event);
+    if (!scheduled && iterating) {
+      scheduled = true;
+      requestAnimationFrame(iterate);
+    }
   }
 
   function handleMouseup(event) {
@@ -90,7 +93,9 @@
   }
 
   function handleCanvasMousemove(event) {
-    paint(event);
+    if (painting) {
+      paint(event);
+    }
   }
 
   function prepareSeed(seed) {
@@ -175,6 +180,8 @@
 
     if (queue.length && iterating) {
       requestAnimationFrame(iterate);
+    } else {
+      scheduled = false;
     }
 
     frameCount++;
