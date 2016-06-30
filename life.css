@@ -2,6 +2,13 @@
   border: 1px solid #ccc;
 }
 
+.controls {
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 .controls p {
   display: inline-block;
 }
